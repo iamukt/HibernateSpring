@@ -1,0 +1,526 @@
+The Spring container is at the core of the Spring Framework. The container will create the objects, wire them together, configure them, and manage their complete lifecycle from creation till destruction. The Spring container uses dependency injection (DI) to manage the components that make up an application. These objects are called Spring Beans. 
+
+The container gets its instructions on what objects to instantiate, configure, and assemble by reading configuration metadata provided. The configuration metadata can be represented either by XML, Java annotations, or Java code. The following diagram is a high-level view of how Spring works. The Spring IoC container makes use of Java POJO classes and configuration metadata to produce a fully configured and executable system or application.
+
+Diag --- spring_ioc_container.jpg
+
+Spring provides following two distinct types of containers.
+
+1 Spring BeanFactory Container (org.springframework.beans.factory .BeanFactory) --root i/f for accessing spring container.
+
+This is the simplest container providing basic support for DI . The BeanFactory and related interfaces, such as BeanFactoryAware, InitializingBean, DisposableBean, are still present in Spring for the purposes of backward compatibility with the large number of third-party frameworks that integrate with Spring.
+
+2 Spring ApplicationContext Container(org.springframework.context.ApplicationContext interface.)
+This container adds more enterprise-specific functionality such as the ability to resolve textual messages from a properties file and the ability to publish application events to interested event listeners. (sub i/f of BeanFactory)
+
+The ApplicationContext container includes all functionality of the BeanFactory container, so it is generally recommended over the BeanFactory. BeanFactory can still be used for light weight applications like mobile devices or applet based applications where data volume and speed is significant.
+
+Spring Bean Definition
+
+The objects that form the backbone of your application and that are managed by the Spring IoC container are called beans.
+
+ A bean is an object that is instantiated, assembled, and otherwise managed by a Spring IoC container. 
+
+These beans are created with the configuration metadata that you supply to the container, for example, in the form of XML <bean/> definitions 
+
+The bean definition contains the information called configuration metadata which is needed for the container to know the followings ---
+
+  How to create a bean
+  Bean's lifecycle details
+  Bean's dependencies
+
+All the above configuration metadata translates into a set of the following properties that make up each bean definition.(i.e attributes or nested elements of bean tag)
+
+Property & its description ---
+class --  mandatory attribute and specifies the bean class to be used to create the bean.
+id/name -- attribute that specifies the bean identifier uniquely.
+scope -- This attribute specifies the scope of the objects created from a particular bean definition. (def=singleton)
+constructor-arg --  This element is used to inject the dependencies .
+property ---This is used to inject the dependencies .
+autowiring mode --This is used to inject the dependencies.
+lazy-init mode -- A lazy-initialized bean tells the IoC container to create a bean instance when it is first requested, rather than at startup.(def = eager)
+init-method	-- A callback to be called just after all necessary properties on the bean have been set by the container. 
+destroy-method	-- A callback to be used when the container containing the bean is destroyed.
+
+
+Spring Configuration Metadata
+
+Spring IoC container is totally decoupled from the format in which this configuration metadata is actually written. There are following three important methods to provide configuration metadata to the Spring Container:
+
+   1.  XML based configuration file.
+   2.  Annotation-based configuration
+   3.  Java-based configuration(Spring 3.x onwards)
+
+Examples of XML based config.
+
+   <!-- A simple bean definition -->
+   <bean id="..." class="...">
+       <!-- collaborators and configuration for this bean go here -->
+   </bean>
+
+   <!-- A bean definition with lazy init set on -->
+   <bean id="..." class="..." lazy-init="true">
+       <!-- collaborators and configuration for this bean go here -->
+   </bean>
+
+   <!-- A bean definition with initialization method -->
+   <bean id="..." class="..." init-method="...">
+       <!-- collaborators and configuration for this bean go here -->
+   </bean>
+
+   <!-- A bean definition with destruction method -->
+   <bean id="..." class="..." destroy-method="...">
+       <!-- collaborators and configuration for this bean go here -->
+   </bean>
+
+   
+Spring Bean Scopes
+
+When defining a <bean> in Spring, you have the option of declaring a scope for that bean. For example, To force Spring to produce a new bean instance each time one is needed, you should declare the bean's scope attribute to be prototype. Similar way if you want Spring to return the same bean instance each time one is needed, you should declare the bean's scope attribute to be singleton.
+
+The Spring Framework supports following five scopes, three of which are available only if you use a web-aware ApplicationContext.
+
+singleton --This scopes the bean definition to a single instance per Spring IoC container (default).
+prototype	-- This scopes a single bean definition to have any number of object instances.
+request -- This scopes a bean definition to an HTTP request. Only valid in the context of a web-aware Spring ApplicationContext.
+session --- This scopes a bean definition to an HTTP session. Only valid in the context of a web-aware Spring ApplicationContext.
+global-session  ----	This scopes a bean definition to a global HTTP session. Only valid in the context of a web-aware Spring ApplicationContext.(valid in portlet context)
+
+-------------------
+
+Spring Bean Life-cycle
+
+The life cycle of a Spring bean is easy to understand. When a bean is instantiated, it may be required to perform some initialization to get it into a usable state. Similarly, when the bean is no longer required and is removed from the container, some cleanup may be required.
+
+Two important bean lifecycle callback methods which are required at the time of bean initialization and its destruction ---
+
+To define setup and clean-up for a bean,  declare the <bean> with init-method and/or destroy-method parameters. The init-method attribute specifies a method that is to be called on the bean immediately upon instantiation. Similarly, destroy-method specifies a method that is called just before a bean is removed from the container.
+
+In the case of XML-based configuration metadata, you can use the init-method attribute to specify the name of the method that has a void no-argument signature. For example:
+
+<bean id="exampleBean" 
+         class="examples.ExampleBean" init-method="init"/>
+
+Following is the class definition:
+
+public class ExampleBean {
+   public void init() {
+      // do some initialization work
+   }
+}
+
+In the case of XML-based configuration metadata, you can use the destroy-method attribute to specify the name of the method that has a void no-argument signature. For example:
+
+<bean id="exampleBean" 
+         class="examples.ExampleBean" destroy-method="destroy"/>
+
+Following is the class definition:
+
+public class ExampleBean {
+   public void destroy() {
+      // do some destruction work
+   }
+}
+
+If you are using Spring's IoC container in a non-web application environment,  you can register a shutdown hook with the JVM.
+Doing so ensures a graceful shutdown of context and calls the relevant destroy methods on your singleton beans so that all resources are released.(destroy method doesn't get invoked on prototype beans in reliable manner)
+
+API of AbstractApplicationContext class (indirect superclass of ClassPathXmlApplicationContext)
+public void registerShutdownHook()
+
+    Registers a shutdown hook with the JVM runtime, closing this context on JVM shutdown unless it has already been closed at that time.
+
+
+It is recommended that you do not use the InitializingBean or DisposableBean callbacks, because XML configuration gives much flexibility in terms of naming your method.
+
+-----------------------------------------------------------------------------------------
+
+
+Spring Bean Definition Inheritance
+
+A bean definition can contain a lot of configuration information, including constructor arguments, property values, and container-specific information such as initialization method, static factory method name, and so on.
+
+A child bean definition inherits configuration data from a parent definition. The child definition can override some values, or add others, as needed.
+
+Spring Bean definition inheritance has nothing to do with Java class inheritance but inheritance concept is same. You can define a parent bean definition as a template and other child beans can inherit required configuration from the parent bean.
+
+When you use XML-based configuration metadata, you indicate a child bean definition by using the parent attribute, specifying the parent bean as the value of this attribute.
+
+
+When you use XML-based configuration metadata, you indicate a child bean definition by using the parent attribute, specifying the parent bean as the value of this attribute.
+
+eg  -- xml config 
+ <bean id="helloWorld" class="com.app.HelloWorld">
+       <property name="message1" value="Hello 1"/>
+       <property name="message2" value="Hello 2"/>
+   </bean>
+
+   <bean id="helloIndia" class="com.app.HelloIndia"
+       parent="helloWorld">
+       <property name="message1" value="Hello 3"/>
+       <property name="message3" value="Hello 4"/>
+   </bean>
+
+
+eg code --- eclipse project : spring_intro
+pkg -- com.app.simple2_inh
+xml - from <resources> beans2_inh.xml
+bean -- HelloWorld.java ,HelloIndia.java & tester -- MainApp.java
+
+OR just to create Bean def template
+Bean Definition Template:
+
+You can create a Bean definition template which can be used by other child bean definitions without much additional effort. While defining a Bean Definition Template, you should not specify class attribute and should specify abstract attribute with a value of true as shown below:
+
+eg 
+ <bean id="beanTeamplate" abstract="true">
+       <property name="message1" value="Hello World!"/>
+       <property name="message2" value="Hello 2"/>
+       <property name="message3" value="Hello 3"/>
+   </bean>
+
+   <bean id="helloIndia" class="com.app.HelloIndia"
+       parent="beanTeamplate">
+       <property name="message1" value="Hello India!"/>
+       <property name="message3" value="New Hello"/>
+   </bean>
+
+Note : Parent bean can't be instantiated.
+(As an example,  check by adding abstract=true in above eg)
+-------------------------------------------------------------------------------------------------------------
+
+Spring dependency injection
+Every java based application has a few objects that work together to present what the end-user sees as a working application. When writing a complex Java application, application classes should be as independent as possible of other Java classes(lesser coupling)  to increase the possibility to reuse these classes and to test them independently of other classes while doing unit testing.
+
+ Dependency Injection (or sometime called wiring) helps in gluing these classes together and same time keeping them independent.
+
+Consider you have an application which has a text editor component and you want to provide spell checking. Your standard code would look something like this:
+
+ 
+public class TextEditor {
+   private SpellChecker spellChecker;
+   public TextEditor() {
+      spellChecker = new SpellChecker();
+   }
+}
+
+What we've done here is create a dependency between the TextEditor and the SpellChecker. In an inversion of control scenario we would instead do something like this:
+
+public class TextEditor {
+   private SpellChecker spellChecker;
+   public TextEditor(SpellChecker spellChecker) {
+      this.spellChecker = spellChecker;
+   }
+}
+
+Here TextEditor should not worry about SpellChecker implementation. The SpellChecker will be implemented independently and will be provided to TextEditor at the time of TextEditor instantiation and this entire procedure is controlled by the Spring Framework.
+
+Here, we have removed the total control from TextEditor and kept it somewhere else (ie. XML configuration file) and the dependency ( ie. class SpellChecker) is being injected into the class TextEditor through a Class Constructor. Thus flow of control has been "inverted" by Dependency Injection (DI) because you have effectively delegated managing dependances to some external system.
+
+Second method of injecting dependency is through Setter Methods of TextEditor class where we will create SpellChecker instance and this instance will be used to call setter methods to initialize TextEditor's properties.
+
+Thus, DI exists in two major variants 
+1	Constructor-based dependency injection
+Constructor-based DI is accomplished when the container invokes a class constructor with a number of arguments, each representing a dependency on other class.
+2	Setter-based dependency injection
+Setter-based DI is accomplished by the container calling setter methods on your beans after invoking a no-argument constructor or no-argument static factory method to instantiate your bean.
+
+
+You can mix both, Constructor-based and Setter-based DI but it is a good rule of thumb to use constructor arguments for mandatory dependencies and setters for optional dependencies.
+
+Code is cleaner with the DI principle and decoupling is more effective when objects are provided with their dependencies. The object does not look up its dependencies, and does not know the location or class of the dependencies rather everything is taken care by the Spring Framework.
+
+Constructor Based DI
+example 
+pkg -- com.app.simple3
+xml - from <resources> beans3.xml
+dependent bean -- TextEditor
+dependency -- SpellChecker
+tester -- MainApp.java
+
+Constructor-based DI is accomplished when the container invokes a class constructor with a number of arguments, each representing a dependency on other class.
+
+Constructor arguments resolution:
+
+There may be a ambiguity existing while passing arguments to the constructor in case there are more than one parameters. To resolve this ambiguity, the order in which the constructor arguments are defined in a bean definition is the order in which those arguments are supplied to the appropriate constructor. Consider the following class:
+
+package x.y;
+
+public class Foo {
+   public Foo(Bar bar, Baz baz) {
+      // ...
+   }
+}
+
+The following configuration works fine:
+
+<beans>
+   <bean id="foo" class="x.y.Foo">
+      <constructor-arg ref="bar"/>
+      <constructor-arg ref="baz"/>
+   </bean>
+
+   <bean id="bar" class="x.y.Bar"/>
+   <bean id="baz" class="x.y.Baz"/>
+</beans>
+
+Let us check one more case where we pass different types to the constructor. Consider the following class:
+
+package x.y;
+
+public class Foo {
+   public Foo(int year, String name) {
+      // ...
+   }
+}
+
+The container can also use type matching with simple types if you explicitly specify the type of the constructor argument using the type attribute. For example:
+
+<beans>
+
+   <bean id="exampleBean" class="examples.ExampleBean">
+      <constructor-arg type="int" value="2001"/>
+      <constructor-arg type="java.lang.String" value="Zara"/>
+   </bean>
+
+</beans>
+
+Finally and the best way to pass constructor arguments, use the index attribute to specify explicitly the index of constructor arguments. Here the index is 0 based. For example:
+
+<beans>
+
+   <bean id="exampleBean" class="examples.ExampleBean">
+      <constructor-arg index="0" value="2001"/>
+      <constructor-arg index="1" value="Zara"/>
+   </bean>
+
+</beans>
+
+A final note, in case you are passing a reference to an object, you need to use ref attribute of <constructor-arg> tag and if you are passing a value directly then you should use value attribute as shown above.
+
+Example of constructor arg prob -- 
+project -- test_spring
+pkg -- why_spring.beans -- Customer
+pkg -- why_spring.tester -- TestCustomer
+xml -- spring-intro2.xml 
+
+
+Setter Based DI
+Setter-based DI is accomplished by the container calling setter methods on your beans after invoking a no-argument constructor or no-argument static factory method to instantiate your bean.
+
+example 
+pkg -- com.app.simple4
+xml - from <resources> beans4.xml
+dependent bean -- TextEditor
+dependency -- SpellChecker
+tester -- MainApp.java
+
+NOTE -- In property tag , in case you are passing a reference to an object, you need to use ref attribute of <property> tag and if you are passing a value directly then you should use value attribute.
+
+-------------------------------------------------------------------------------------------------------------
+
+static factory method based DI 
+For example 
+refer to spring_syntax --- eg 3
+
+-------------------------------------------------------------------------------------------------------------
+
+XML Configuration using p-namespace:
+
+If you have many setter methods then it is convenient to use p-namespace in the XML configuration file. Let us check the difference:
+
+Let us take the example of a standard XML configuration file with <property> tags:
+
+
+   <bean id="john-classic" class="com.example.Person">
+      <property name="name" value="John Doe"/>
+      <property name="spouse" ref="jane"/>
+   </bean>
+
+   <bean name="jane" class="com.example.Person">
+      <property name="name" value="Jane Doe"/>
+   </bean>
+
+
+Above XML configuration can be re-written in a cleaner way using p-namespace as follows:(add p namespace)
+
+
+   <bean id="john-classic" class="com.example.Person"
+      p:name="John Doe"
+      p:spouse-ref="jane"/>
+   </bean>
+
+   <bean name="jane" class="com.example.Person"
+      p:name="Jane Doe"/>
+   </bean>
+
+example 
+pkg -- com.app.simple4
+xml - from <resources> beans4-p.xml
+dependent bean -- TextEditor
+dependency -- SpellChecker
+tester -- MainAppWithPNameSpace.java
+
+-------------------------------------------------------------------------------------------------------------
+
+Spring injecting Inner Beans
+
+As you know Java inner classes are defined within the scope of outer classes, similarly, inner beans are beans that are defined within the scope of outer bean. Thus, a <bean/> element inside the <property/> or <constructor-arg/> elements is called inner bean and it is shown below.
+
+   <bean id="outerBean" class="...">
+      <property name="target">
+         <bean id="innerBean" class="..."/>
+      </property>
+   </bean>
+
+</beans>
+
+example 
+pkg -- com.app.simple5
+xml - from <resources> beans5.xml
+dependent bean -- TextEditor
+dependency -- SpellChecker
+tester -- MainApp.java
+
+-------------------------------------------------------------------------------------------------------------
+
+Spring Handling & Injecting Collections
+
+Configuring  properties of primitive data type using value attribute and object references using ref attribute of the <property> tag is already tested using  Bean configuration file. Both the cases deal with passing singular value to a bean.
+
+Now what  if you want to pass multiple values like Java Collection types List, Set, Map, and Properties. To handle the situation, Spring offers four types of collection configuration elements which are as follows:
+
+<list>	This helps in wiring ie injecting a list of values, allowing duplicates.
+<set>	This helps in wiring a set of values but without any duplicates.
+<map>	This can be used to inject a collection of name-value pairs where name and value can be of any type.(Object)
+<props>	This can be used to inject a collection of name-value pairs where the name and value are both Strings.
+
+You can use either <list> or <set> to wire any implementation of java.util.Collection or an array.
+
+You will come across two situations (a) Passing direct values of the collection and (b) Passing a reference of a bean as one of the collection elements.
+
+Passing direct values of the collection
+example
+pkg -- com.app.simple6
+xml - from <resources> beans6.xml
+bean -- JavaCollection
+tester -- MainApp.java
+
+-------------------------------------------------------------------------------------------------------------
+Injecting Bean References:
+
+Following Bean definition shows how to inject bean references as one of the collection's element. Even you can mix references and values all together as shown below:
+
+ <!-- Bean Definition to handle references and values -->
+   <bean id="..." class="...">
+
+      <!-- Passing bean reference  for java.util.List -->
+      <property name="addressList">
+        <list>
+           <ref bean="address1"/>
+           <ref bean="address2"/>
+           <value>India</value>
+        </list>
+      </property>
+
+     <!-- Passing bean reference  for java.util.Set -->
+     <property name="addressSet">
+        <set>
+           <ref bean="address1"/>
+           <ref bean="address2"/>
+           <value>USA</value>
+        </set>
+      </property>
+
+     <!-- Passing bean reference  for java.util.Map -->
+     <property name="addressMap">
+        <map>
+           <entry key="one" value="INDIA"/>
+           <entry key ="two" value-ref="address1"/>
+           <entry key ="three" value-ref="address2"/>
+        </map>
+      </property>
+
+   </bean>
+
+example
+pkg -- com.app.simple6_ref
+xml - from <resources> beans6-ref.xml
+bean -- Part,Product
+tester -- MainApp.java
+
+-------------------------------------------------------------------------------------------------------------
+Injecting null and empty string values
+
+If you need to pass an empty string as a value then you can pass it as follows:
+
+<bean id="..." class="exampleBean">
+   <property name="email" value=""/>
+</bean>
+
+The  equivalent  Java code: exampleBean.setEmail("")
+
+If you need to pass an NULL value then you can pass it as follows:
+
+<bean id="..." class="exampleBean">
+   <property name="email"><null/></property>
+</bean>
+
+Equivalent  Java code: exampleBean.setEmail(null)
+
+-------------------------------------------------------------------------------------------------------------
+
+Spring Beans Auto-Wiring --- 
+auto wiring -- Injecting dependecies in dependent objs w/o writing any constructor-arg or property tags.
+There is no auto wiring available to factory based D.I
+
+One can  declare beans using the <bean> element and inject <bean> (or wire beans) with using <constructor-arg> and <property> elements in XML configuration file.
+
+The Spring container can autowire relationships between collaborating beans without using <constructor-arg> and <property> elements which helps reduce the amount of XML configuration you write for a big Spring based application.
+
+Autowiring Modes:
+
+There are following autowiring modes which can be used to instruct Spring container to use autowiring for dependency injection. You use the autowire attribute of the <bean/> element to specify autowire mode for a bean definition.
+
+no --	This is default setting which means no autowiring and you should use explicit bean reference for wiring. 
+
+byName -- Autowiring by property name. Spring container looks at the properties of the beans on which autowire attribute is set to byName in the XML configuration file. It then tries to match and wire its properties with the beans defined by the same names in the configuration file.
+
+byType -- Autowiring by property datatype. Spring container looks at the properties of the beans on which autowire attribute is set to byType in the XML configuration file. It then tries to match and wire a property if its type matches with exactly one of the beans name in configuration file. If more than one such beans exists, a fatal exception is thrown.
+
+constructor -- Similar to byType, but type applies to constructor arguments. If there is not exactly one bean of the constructor argument type in the container, a fatal error is raised.
+
+autodetect	 --- Spring first tries to wire using autowire by constructor, if it does not work, Spring tries to autowire by byType.
+
+NOTE -- auto wiring works best when used consistently throughout the application. It can be overridden by explicit wiring done in xml config files.
+
+example
+pkg -- com.app.simple5.autowire
+xml - from <resources> beans5-autowire.xml (shows autowire by type,see probs in case of multiple beans, later change to autowire by name)
+dependency bean i/f --- SpellChecker
+dependency beans -- PrimitiveSpellChecker,AdvancedSpellChecker
+dependent bean -- TextEditor
+tester -- MainApp.java
+
+
+
+
+
+
+
+
+
+
+
+DI based assgnment soln (XML manner)
+eclipse project -- test_spring
+pkg for beans --performService
+i./f -- Performer
+Impl class -- Juggler,Magician
+i/f -- Song
+Imple Bean -- Singer
+Bean -- SingingPerformer --imple Performer (Performer injected by constr arg DI & Song injected by setter DI)
+xml -- performace.xml
+Tester -- performService.tester.TestPerformance
+
+

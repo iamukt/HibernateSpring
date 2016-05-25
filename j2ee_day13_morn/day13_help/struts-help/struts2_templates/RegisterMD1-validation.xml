@@ -1,0 +1,34 @@
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+       "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+<validators>
+	<field name="password">
+		<field-validator type="requiredstring">
+			<message key="password.required" />
+		</field-validator>
+		<field-validator type="stringlength">
+			<param name="maxLength">10</param>
+			<param name="minLength">6</param>
+			<message key="password.incorrect.length" />
+		</field-validator>
+	</field>
+	<field name="username">
+		<field-validator type="requiredstring">
+			<message key="username.required" />
+		</field-validator>
+		<field-validator type="stringlength">
+			<param name="maxLength">8</param>
+			<param name="minLength">5</param>
+			<message key="username.incorrect.length"></message>
+		</field-validator>
+	</field>
+	<field name="birthday">
+	<!-- 	<field-validator type="requiredstring">
+			<message key="birthdate.required" />
+		</field-validator> -->
+		<field-validator type="date">
+			<param name="min">01/01/1990</param>
+			<param name="max">01/01/2000</param>
+			<message>Birthday must be within ${min} and ${max}</message>
+		</field-validator>
+	</field>
+</validators>

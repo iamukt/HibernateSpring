@@ -1,0 +1,58 @@
+1.Revise Hibernate POJO life cycle
+
+2. Composite primary key
+Scenario
+Account has a  unique combination of -- acctd ID & cust id
+@Entity
+2.1. AccountPOJO --
+props --- type,balance,name
+
+CompoundPK key;
+
+@Id 
+...getKey()
+
+2.2 
+@Embeddable
+class CompoundPK --- override -- hashCode & equals
+MUST imple --- Serializable
+acctd ID & cust id --d.m --MUST provide getters n setters.
+
+
+
+
+3. Collection of elements --- value types
+Person has Hobbies --List<String> --collection of value type.
+
+How to specify using annotations in Person entity?
+
+3.1 @ElementCollection //Specifies a collection of instances of a basic type(String or any java type) or embeddable UDT class
+
+3.2 Additional optional annotation.
+@JoinTable(name = "person_hobbies", joinColumns = @JoinColumn(name = "person_id"))
+
+3.3 Understand MOST important --org.hibernate.LazyInitializationException
+
+4. get vs load
+
+In GetBookById --replace get by load.
+
+
+
+5. MVC 
+why MVC
+MVC overview
+MVC n Hibernate implementation.
+
+5.5 Filter
+
+6 Enter Struts
+--------------------------
+
+
+
+
+
+
+
+

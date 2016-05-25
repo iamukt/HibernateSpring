@@ -1,0 +1,122 @@
+1.Revise steps in web app + hibernate -- by creating from scratch web app.
+
+
+save vs saveOrUpdate vs persist
+
+1.5 Introduce -- web application listener & complete web appln with JB & custom tags & JSTL (+ HQL to set IN params)
+
+
+web application listeners --
+3 levels
+1. Request level --- 
+2. HttpSession level 
+3. ServletContext level -- currently needed.
+
+Objective -- get all books from db -- by specified author and published after given date.
+
+DAO 
+Session API
+1. Create Query
+Query createQuery(String hql/jpql)
+eg : String jpql="select b from Book b where b.author = :auth and b.publishDate > :dt";
+2. For setting IN parameter
+Query API
+public Query setParameter(String pName,Type val)
+
+3. Query exec method
+List list() throws HibernateExc
+
+eg :
+List<Book> l1=sess.createQuery(jpql).setParameter("auth",author).setParameter("dt",d1).list();
+
+
+
+4. If query is returning single result(POJO) -- better alternative
+Query exec method
+Object uniqueResult() throws HibernateExc
+
+
+Objective --
+Apply discount on all books -- by specified author and published before given date.Supply disc amount also.
+
+Create & Test it initially with -- Java SE + hibernate
+Later test it using Custom tags.
+(JSP --- Custom tag -- DAO --DTO --DB)
+
+
+
+1.6 openSession vs getCurrentSession
+
+2. Understand --Session API -- saveOrUpdate, persist,clear,evict,update,merge
+
+3. Detailed look at POJO state transitions
+
+3.2 Reverse engineering -- Creating entities from exisitng db table
+
+create JPA project -- with Tomcat as target server.
+JPA facet ---
+JPA 2.1 version
+Disable lib config.
+Add DB connection ---oracle DB
+Oracle 11 --- add ojdbc6.jar & configure DB properties
+Test connection.
+
+
+
+
+-------------------------------------------
+
+3.5 comp prim key
+Account POJO -- acctd ID & cust id
+@Entity
+1. AccountPOJO --
+props --- type,balance,name
+
+CompoundPK key;
+
+@Id 
+...getKey()
+
+2. 
+@Embeddable
+class CompoundPK --- override -- hashCode & equals
+MUST imple --- Serializable
+acctd ID & cust id --d.m
+
+4. get vs load
+eg of get 
+eg of load
+
+
+4.5 Collection of elements --- non entity types
+
+@ElementCollection
+@JoinTable(name = "contact_hobbies", joinColumns = @JoinColumn(name = "contact_id"))
+@Column(length=200)
+public List<String> getHobbies() {
+  return hobbies;
+}
+
+5. associations --- one to one 
+Objective --- 
+@Entity @Table
+Person --- id, name.
+@OneToOne
+private PersonDetails details;
+
+
+@Entity @Table
+PersonDetails  --- job,zipCode,hobby,income
+
+
+
+
+
+
+
+
+
+
+
+
+

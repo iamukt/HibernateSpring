@@ -1,0 +1,119 @@
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+       "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+<validators>
+	<field name="password">
+		<field-validator type="requiredstring">
+			<message key="password.required" />
+		</field-validator>
+		<field-validator type="stringlength">
+			<param name="maxLength">10</param>
+			<param name="minLength">6</param>
+			<message key="password.incorrect.length" />
+		</field-validator>
+	</field>
+	<field name="username">
+		<field-validator type="requiredstring">
+			<message key="username.required" />
+		</field-validator>
+		<field-validator type="stringlength">
+			<param name="maxLength">8</param>
+			<param name="minLength">5</param>
+			<message key="username.incorrect.length"></message>
+		</field-validator>
+	</field>
+	<field name="birthday">
+		<field-validator type="date">
+			<param name="min">01/01/1990</param>
+			<param name="max">01/01/2000</param>
+			<message>Birthday must be within ${min} and ${max}</message>
+		</field-validator>
+	</field>
+	<!-- age value given in string must be int -->
+	<field name="age">
+        <field-validator type="conversion">
+            <message>
+                An age must be an integer.
+            </message>
+        </field-validator>
+    </field>
+	<!-- email type validator -->
+	<field name="email">
+        <field-validator type="email">
+            <message>Invalid email</message>
+        </field-validator>
+    </field>
+
+	<field name="max">
+        <field-validator type="fieldexpression">
+            <param name="expression">
+                max > min
+            </param>
+            <message>
+                Maximum temperature must be greater than Minimum temperature
+            </message>
+        </field-validator>
+    </field>
+	<field name="year">
+        <field-validator type="int">
+            <param name="min">1990</param>
+            <param name="max">2009</param>
+            <message>Year must be between 1990 and 2009</message>
+        </field-validator>
+    </field>
+	<!-- phone of type 123-456-7890 -->
+	<field name="phone">
+        <field-validator type="regex">
+            <param name="expression">
+                <![CDATA[\d\d\d\-\d\d\d\-\d\d\d\d]]>
+            </param>
+            <message>
+                Invalid phone number or invalid format
+            </message>
+        </field-validator>
+    </field>
+	<field name="userName">
+        <field-validator type="required">
+            <message>Please enter a user name</message>
+        </field-validator>
+    </field>
+	<field name="url">
+        <field-validator type="url">
+            <message>Invalid URL</message>
+        </field-validator>
+    </field>
+	<!-- zipcode valid format 12345 -->
+	<field name="zipCode">
+        <field-validator type="regex">
+            <param name="expression">
+                <![CDATA[\d\d\d\d\d]]>
+            </param>
+            <message>
+                Invalid zip code or invalid format
+            </message>
+        </field-validator>
+    </field>
+	<field name="address">
+        <field-validator type="visitor">
+            <message>Address: </message>
+        </field-validator>
+    </field>
+	  <field name="password">
+        <field-validator type="strongpassword">
+            <param name="minLength">8</param>
+            <message>
+                Password must be at least 8 characters long
+                and contains at least one lower case character,
+                one upper case character, and a digit.
+            </message>
+        </field-validator>
+    </field>
+	<!-- expression type validator works with ExpressionTestAction max,min props of action class-->
+	<validator type="expression">
+        <param name="expression">
+            max > min
+        </param>
+        <message>
+            Maximum temperature must be greater than Minimum temperature
+        </message>
+    </validator>
+</validators>

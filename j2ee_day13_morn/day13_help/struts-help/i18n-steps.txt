@@ -1,0 +1,55 @@
+Internationalization -- i18n -- Technique for developing applications that support multiple languages, data formats  , currency formats , date formats etc without having to re-write view generation logic.
+
+Localization --- l10n --- technique for adapting an internationalized appln to support a specific locale.
+Locale = specific geographical,political or cultural region.
+
+Struts has inherent support for i18n & l10n
+
+Steps for i18n
+1. Identify the locales(here only applying for different languages & different char scripts)
+2. Create text-based property file -- one per each locale. ---store it under <src> or <resources>
+Rule --- for global mesages --- i.e common to all actions
+add following constant in struts.xml
+<constant name="struts.custom.i18n.resources" value="global" />
+If value used is global --- then create property files --- global.properties -- mandatory
+& then create copies using suffix as languagecode_countrycode(Marathi mr_IN)
+3. Don't hardcode UI component labels --- instead take them from properties files
+eg <s:textfield key="global.username" name="username" />
+
+
+4. To change the locale ---- i18n interceptor accepts 1 param 
+request_locale --- this must be set to --- languagecode_countrycode
+
+eg --- <s:url var="localeEN" namespace="/locale" action="locale1" >
+   <s:param name="request_locale" >en</s:param>
+</s:url>
+
+<s:a href="%{localeEN}">English</s:a>
+& then can use link/select option list for allowing user to chose labels
+eg : <s:a href="%{localeEn}">English </s:a>
+If user presses English --- http://localhost:9090/test_struts/locale/locale1.action?request_locale=en
+
+
+
+eg URL ---http://localhost:9090/day10_struts/locale/locale.action
+
+---request_locale=en ---processed  by i18n interceptor ---searches under <web-inf>/classes ---global_en.properties & tries to find value of key=global.username
+
+ 
+
+For non english char sets --- eg --- devnagari scripts , chinese or korean 
+Below given are the additional steps
+
+
+1. Link http://www.google.com/transliterate/Marathi
+2. Type in English & see that it gets phonetically translated in Marathi
+3. Copy it under notepad --- eg marathi.txt (while saving  --save as -- choose encoding --- UTF-8
+4. Now for converting it from native ---- UTF 8 
+use Java tool 
+native2ascii -encoding UTF-8 marathi.txt output.txt
+5. For Marathi --- locale setting to use is mr_IN
+Create copy of properties file with this suffix & run code.
+
+For Hindi --- locale setting to use is hi_IN
+Create copy of properties file with this suffix & run code.
+

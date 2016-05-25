@@ -1,0 +1,88 @@
+1. MVC overview
+2. Demo ---Create New  Dyn web project, copy jars to <web-inf>/lib from day14_web,configure DispatcherServlet in web.xml,
+ <servlet>
+   <servlet-name>spring</servlet-name>
+   <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+   <load-on-startup>1</load-on-startup>
+   </servlet>
+   <servlet-mapping>
+   <servlet-name>spring</servlet-name>
+   <url-pattern>/</url-pattern>
+   </servlet-mapping>
+create servletName-servlet.xml under <web-inf> ---- add beans,context & mvc namespaces.
+
+
+
+2.1 Add tags -- context:annotation-config,context:component-scan,mvc:annotation-driven(to enable annotated MVC controller support)
+2.2 declare view resolver bean  --- Can use InternalResourceViewResolver or its super-class ---UrlBasedViewResolver --- Props are same for both beans --- viewClass(choose JSTL view for JSP view templates), prefix -- typically under web-inf & suffix -- .jsp
+<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/pages/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+2.3 Write Hello Controller
+Annotations used --- @Controller & @RequestMapping(add at method level ---& pass only URL value)
+eg -- @RequestMapping("/welcome") . Ret type -string --represents view name --- wil get resolved by viewResolver bean.
+
+2.4 Add to same controller , one more controller req handling method -- @RequestMapping("/welcome1") & ret type as ModelAndView. 
+Using M&V constructor --- set model obj & view name --- test it.
+
+2.5 Add 1 more method --- ret Type String BUT annotated with @ResponseBody
+-- tells SC -- not to pass it to view (JSP) layer, but directly add ret val as resp data & commit response.
+
+2.6 To enable spring custom tags support.
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+1.<form:form method="post" modelAttribute="name of model --rq scoped attr">
+2. <form:label path="email">Enter User Email</form:label>
+
+3. <form:input path="email" />
+<form:errors path="email" />
+	
+
+3. Objective --- Using Model, @ModelAttribute, using spring form UI tags,RequestMethod usage.
+Layers used --- POJO/Domain object (same as ModelDriven<T> of struts 2 or ActionForm bean of struts 1)  (Contact) , Controller (controllers.ContactController),
+Add contact -- displayForm (create empty domain object & adds it to Model) --- displays form (default action submitted to same page, in modelAttribute of form:form --- mention same name as model attr name added in form) 
+Form is submitted using post method --- 3 params to method - Model map,@ModelAttribute("modelName") --- injected into param Contact c, BindingResult
+SC invokes setter of Model attr by loading form data (req params --- linked on path attribute of form elements) & supplies this model(Contact) .
+Model map can also be retrieved or modified.
+BindingResult --- represents P.L validation errors.
+If validation errs --- res.hasErrors() -- rets true & in that case ret view as orig page.
+Otherwise ret success view.
+
+index.jsp---URL via link /contact --- controllers.ContactController -- get method --displayForm -- /web-inf/pages/contacts.jsp ---display form -- submitted via post -- ContactController's addContact method --- display.jsp or contacts.jsp(validation errors)
+
+Validation errs --- <form:errors path="*" .../>
+
+3.1 Follow Link from index.jsp 
+Add Contact + Test Session Attribute ---- ContactController1 --- Here because of @SessionAttributes("contact") -- contact model attr gets added on session scope, so its even visible from next page via next link.
+
+3.2  Follow Link from index.jsp 
+Add Contacts + Service Layer + Model Attributes ---controllers.ContactController2 --- shows usage of @ModelAttribute added as method level anno. --- Typically used for loading data from DB before form gets displayed. 
+
+
+
+3.3 Problem in above scenarios is -- in case of validation failures --- page will display spring's default err mesgs.
+How to add custom err messages & perform validation using annotations?
+0. Add entry in xml config file
+1. Add validation annotations --- in your model class -- model.ValidContact
+2.
+Link from index.jsp -- Validate & Add Contact --controllers.ValidateContactController---validate_contacts.jsp
+
+3.4 Annotations for validations , may not be always sufficient. In that case u have write custom validator(ur own validator). This can be combined with annotated(eg -in  ValidContact class --- @Range,@NotEmpty)
+Steps
+1.
+Create a class which imple. org.springframework.validation.Validator i/f
+2. Imple supports & validate methods (more dtls on how to imple is in readme_web_mvc)
+3. In req controller method --- add following in method signature.
+@ModelAttribute("validContact") @Valid ValidContact c,BindingResult res
+It implies that SC will take the model object -- check it for validations , in case of errs they will be stroed in BindingResult ---prog can chk for the same & in case of errs --- forward the user to form page again highlighted with errors.(In this scenarion prog must call injected validator's validate method)
+
+
+4. Example on how to use @SesionAtributes to hold multiple attrs in session scope
+& also redirect: prefix usage
+Project -- spring_web
+From index.jsp --Follow link  --- Add Multiple Session Attributes
+Controller used -- controllers.MultiSessionAttrController & jsps --  add_contact & added_contact.

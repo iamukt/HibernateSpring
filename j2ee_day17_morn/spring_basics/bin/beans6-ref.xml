@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Definition for javaCollection of refs-->
+	<bean id="product" class="com.app.simple6_ref.Product" 
+	autowire="byType">
+	<!-- 	<property name="parts">
+			<set>
+				<ref bean="part1" />
+				<ref bean="part2" />
+				<ref bean="part3" />
+			</set>
+		</property>
+	 --></bean>
+	<bean id="part1" class="com.app.simple6_ref.Part">
+		<property name="name" value="Part 1" />
+	</bean>
+	<bean id="part2" class="com.app.simple6_ref.Part">
+		<property name="name" value="Part 2" />
+	</bean>
+	<bean id="part3" class="com.app.simple6_ref.Part">
+		<property name="name" value="Part 1234" />
+	</bean>
+
+</beans>

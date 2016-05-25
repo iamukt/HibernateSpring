@@ -1,0 +1,13 @@
+In Hibernate  APIs, the persistence context is defined as the org.hibernate.Session. In JPA, the persistence context is defined by javax.persistence.EntityManager. Its methods deal with moving entities between these states.
+
+
+Entity states
+
+
+new, or transient - the entity has just been instantiated and is not associated with a persistence context. It has no persistent representation in the database and no identifier value has been assigned.
+
+managed, or persistent - the entity has an associated identifier and is associated with a persistence context.
+
+detached - the entity has an associated identifier, but is no longer associated with a persistence context (usually because the persistence context was closed or the instance was evicted from the context)
+
+removed - the entity has an associated identifier and is associated with a persistence context, however it is scheduled for removal from the database.

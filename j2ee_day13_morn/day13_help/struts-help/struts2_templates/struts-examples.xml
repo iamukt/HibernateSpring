@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+ <!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+	<constant name="struts.devMode" value="true" />
+	<package name="/" extends="struts-default">
+		<!-- <action name="test" class="actions.TestBasic"> <result name="success">/test_result.jsp</result> 
+			</action> -->
+		<action name="hello">
+			<result>/basic/welcome.jsp</result>
+		</action>
+		<action name="login" class="actions.LoginAction">
+			<result name="success">/WEB-INF/results/login_ok.jsp</result>
+		</action>
+		<action name="login1" class="actions.LoginAction1">
+			<result name="success">/WEB-INF/results/login_ok.jsp</result>
+			<result name="error">/WEB-INF/results/login_err.jsp</result>
+		</action>
+		<!-- Basic validation by @Override of validate() -->
+		<action name="login2" class="actions.LoginAction2">
+			<result name="abc">/WEB-INF/results/login_abc.jsp</result>
+			<result name="success">/WEB-INF/results/login_ok.jsp</result>
+			<result name="error">/WEB-INF/results/login_err.jsp</result>
+			<result name="input">/basic/login2.jsp</result>
+		</action>
+		<action name="*Register" method="{1}" class="actions.RegisterAction">
+            <result name="populate">/basic/register.jsp</result>
+            <result name="input">/basic/register.jsp</result>
+            <result name="success">/basic/success.jsp</result>
+        </action>        
+	</package>
+	<package name="/port"   namespace="/port" extends="struts-default">
+	<!-- Basic validations with @Override validate -->
+		<action name="Register" class="portfolio_actions.Register">
+			<result>/port/RegistrationSuccess.jsp</result>
+			<result name="input">/port/Registration.jsp</result>
+		</action>
+		<action name="RegisterMD" class="portfolio_actions.RegisterMD">
+			<result>/port/RegistrationSuccess.jsp</result>
+			<result name="input">/port/Registration_md.jsp</result>
+		</action>
+		<!-- RegisterMD1 has both validation.xml & validate -->
+		<action name="RegisterMD1" class="portfolio_actions.RegisterMD1">
+			<result>/port/RegistrationSuccess.jsp</result>
+			<result name="input">/port/Registration_md1.jsp</result>
+		</action>
+		  
+	</package>
+	<include file="file/file.xml"/>
+
+
+</struts>

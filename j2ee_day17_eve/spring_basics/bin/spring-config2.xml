@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+
+	<!-- dependent bean -->
+	<bean id="my_atm" class="com.app.core.atm2.ATMImpl"
+		factory-method="getInstance">
+		<constructor-arg  ref="soap"/>
+
+	</bean>
+
+	<!-- dependency beans -->
+	<bean id="test" class="com.app.core.atm2.TestTransport" />
+
+	<bean id="http" class="com.app.core.atm2.HttpTransport" />
+
+	<bean id="soap" class="com.app.core.atm2.SOAPTransport" />
+
+
+
+
+</beans>
